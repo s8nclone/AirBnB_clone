@@ -1,5 +1,9 @@
 # AirBnB Clone Project
 
+## Task: Write a command interpreter to manage your AirBnB objects.
+
+This is the first step towards building a full web application: ###the AirBnB clone
+
 ## Requirements
 
 
