@@ -69,6 +69,20 @@ class HBNBCommand(cmd.Cmd):
                 del storage.all()[f"{obj.__class__.__name__}.{obj_id}"]
                 storage.save()
 
+    def do_all(self, arg):
+        """Prints all string representation of all instances \
+based or not on the class name.
+        """
+        args = arg_splitter("all", arg)
+
+        if args is True:
+            all_objects = storage.all()
+            obj_list = []
+
+            for obj in all_objects.values():
+                obj_list.append(str(obj))
+            print(obj_list)
+
 
 def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
     """Helper function to help split arguments (DRY)
@@ -88,6 +102,8 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
     args = arg.split()
 
     if not args:
+        if cls == "all":
+            return True
         print("** class name missing **")
         return False
 
@@ -101,6 +117,8 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
             return False
         else:
             return args[1]
+
+    return True
 
 
 def find_instance(instance_id: str) -> Union[BaseModel, None]:
