@@ -54,14 +54,30 @@ class HBNBCommand(cmd.Cmd):
         ret_val = arg_splitter("show", arg)
 
         if ret_val:
-            output = find_id(ret_val)
-            if output:
-                print(output)
+            all_objects = storage.all()
+            for key, value in all_objects.items():
+                cls, id = key.split(".")
+                if id == ret_val:
+                    print(value)
+                    break
+            else:
+                print("** no instance found **")
 
-    def destroy(self, arg):
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id.
+        """
         ret_val = arg_splitter("destroy", arg)
 
-        # if ret_val
+        if ret_val:
+            all_objects = storage.all()
+            for key, value in all_objects.items():
+                cls, id = key.split(".")
+                if id == ret_val:
+                    del all_objects[key]
+                    storage.save()
+                    break
+            else:
+                print("** no instance found **")
 
 
 def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
@@ -99,7 +115,7 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
     return True
 
 
-def find_id(instance_id: str) -> str:
+def find_id(cls: str, instance_id: str) -> str:
     """Find id of a class instance (DRY)
     """
     all_objects = storage.all()
