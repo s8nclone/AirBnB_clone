@@ -51,33 +51,23 @@ class HBNBCommand(cmd.Cmd):
         Example:
             show BaseModel 1234-1234-1234
         """
-        ret_val = arg_splitter("show", arg)
+        obj_id = arg_splitter("show", arg)
 
-        if ret_val:
-            all_objects = storage.all()
-            for key, value in all_objects.items():
-                cls, id = key.split(".")
-                if id == ret_val:
-                    print(value)
-                    break
-            else:
-                print("** no instance found **")
+        if obj_id:
+            obj = find_instance(obj_id)
+            if obj:
+                print(obj)
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id.
         """
-        ret_val = arg_splitter("destroy", arg)
+        obj_id = arg_splitter("destroy", arg)
 
-        if ret_val:
-            all_objects = storage.all()
-            for key, value in all_objects.items():
-                cls, id = key.split(".")
-                if id == ret_val:
-                    del all_objects[key]
-                    storage.save()
-                    break
-            else:
-                print("** no instance found **")
+        if obj_id:
+            obj = find_instance(obj_id)
+            if obj:
+                del storage.all()[f"{obj.__class__.__name__}.{obj_id}"]
+                storage.save()
 
 
 def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
@@ -112,19 +102,17 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
         else:
             return args[1]
 
-    return True
 
-
-def find_id(cls: str, instance_id: str) -> str:
-    """Find id of a class instance (DRY)
+def find_instance(instance_id: str) -> Union[BaseModel, None]:
+    """Finds instance based on the id (DRY).
     """
     all_objects = storage.all()
-    for key, value in all_objects.items():
-        cls, id = key.split(".")
-        if id == instance_id:
-            return value
+    for obj in all_objects.values():
+        if obj.id == instance_id:
+            return obj
     else:
         print("** no instance found **")
+    return None
 
 
 if __name__ == '__main__':
