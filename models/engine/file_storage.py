@@ -66,6 +66,7 @@ class FileStorage:
         try:
             # I put this here instead of the top to avoid circular imports
             from models.base_model import BaseModel
+            import sys
 
             with open(FileStorage.__file_path, 'r') as f:
                 # In order for objects not to persist even when json storage
@@ -74,8 +75,8 @@ class FileStorage:
                 temp = json.load(f)
                 for key, value in temp.items():
                     class_name, obj_id = key.split('.')
-                    class_name = eval(class_name)
-                    obj = class_name(**value)
+                    cls = getattr(sys.modules["models.base_model"], class_name)
+                    obj = cls(**value)
                     FileStorage.__objects[key] = obj
         except FileNotFoundError as e:
             pass
