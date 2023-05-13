@@ -5,6 +5,7 @@ Contains the entry point of the command interpreter.
 
 """
 import cmd
+import ast
 from models.base_model import BaseModel
 from models import storage
 from typing import Union
@@ -83,6 +84,25 @@ based or not on the class name.
                 obj_list.append(str(obj))
             print(obj_list)
 
+    def do_update(self, arg):
+        """
+        Updates an instance based on the class name and id
+
+        This is done by adding or updating attribute
+
+        Usage:
+            update <class name> <id> <attribute name> "<attribute value>"
+        Example:
+            update BaseModel 1234-1234-1234 email "aibnb@mail.com"
+        """
+
+        if type(arg_splitter("update", arg)) is not bool:
+            cls, id, attr_name, attr_val = arg_splitter("update", arg)
+
+            instance = storage.all()[f"{cls}.{id}"]
+            setattr(instance, attr_name, ast.literal_eval(attr_val))
+            storage.save()
+
 
 def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
     """Helper function to help split arguments (DRY)
@@ -115,6 +135,18 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
         if len(args) < 2:
             print("** instance id missing **")
             return False
+        elif cls == "update":
+            if len(args) > 1:
+                if not find_instance(args[1]):
+                    return False
+                elif len(args) < 3:
+                    print("** attribute name missing **")
+                    return False
+            elif len(args) < 4:
+                print("** value missing **")
+                return False
+            else:
+                return args[0], args[1], args[2], args[3]
         else:
             return args[1]
 
