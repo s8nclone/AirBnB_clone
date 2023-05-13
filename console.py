@@ -95,13 +95,19 @@ based or not on the class name.
         Example:
             update BaseModel 1234-1234-1234 email "aibnb@mail.com"
         """
-
+        # print(f"\nType of arg_splitter return value: \
+        #     {type(arg_splitter('update', arg))}\
+        #         Return value is {arg_splitter('update', arg)}")
         if type(arg_splitter("update", arg)) is not bool:
             cls, id, attr_name, attr_val = arg_splitter("update", arg)
 
-            instance = storage.all()[f"{cls}.{id}"]
-            setattr(instance, attr_name, ast.literal_eval(attr_val))
-            storage.save()
+            if attr_name in {"id", "created_at", "updated_at"}:
+                print(f"** can't update the {attr_name} attribute **")
+            else:
+                instance = storage.all()[f"{cls}.{id}"]
+                setattr(instance, attr_name, ast.literal_eval(attr_val))
+                storage.save()
+            # print(f"\nInstance: {instance}")
 
 
 def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
@@ -142,7 +148,7 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
                 elif len(args) < 3:
                     print("** attribute name missing **")
                     return False
-            elif len(args) < 4:
+            if len(args) < 4:
                 print("** value missing **")
                 return False
             else:
