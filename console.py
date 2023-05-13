@@ -59,7 +59,7 @@ class HBNBCommand(cmd.Cmd):
             if obj:
                 print(obj)
 
-    def do_destroy(self, arg):
+    def do_destroy(self, arg: str) -> None:
         """Deletes an instance based on the class name and id.
         """
         obj_id = arg_splitter("destroy", arg)
@@ -70,7 +70,7 @@ class HBNBCommand(cmd.Cmd):
                 del storage.all()[f"{obj.__class__.__name__}.{obj_id}"]
                 storage.save()
 
-    def do_all(self, arg):
+    def do_all(self, arg: str) -> None:
         """Prints all string representation of all instances \
 based or not on the class name.
         """
@@ -84,7 +84,7 @@ based or not on the class name.
                 obj_list.append(str(obj))
             print(obj_list)
 
-    def do_update(self, arg):
+    def do_update(self, arg: str) -> None:
         """
         Updates an instance based on the class name and id
 
