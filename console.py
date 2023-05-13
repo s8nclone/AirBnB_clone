@@ -12,6 +12,7 @@ from models.base_model import BaseModel
 from models import storage
 from typing import Union
 from models.engine.file_storage import valid_classes
+from models.engine.file_storage import modules
 
 
 class HBNBCommand(cmd.Cmd):
@@ -44,10 +45,13 @@ class HBNBCommand(cmd.Cmd):
         # print(f"return value is {ret_val}")
 
         if class_name:
-            cls = getattr(sys.modules["models.base_model"], class_name)
-            model = cls()
-            model.save()
-            print(model.id)
+            for modl in modules:
+                cls = getattr(sys.modules[modl], class_name, None)
+                if cls:
+                    model = cls()
+                    model.save()
+                    print(model.id)
+                    break
 
     def do_show(self, arg: str) -> None:
         """Prints the string representation of an instance \
@@ -80,7 +84,7 @@ based or not on the class name.
         """
         args = arg_splitter("all", arg)
 
-        if args is True:
+        if args:
             all_objects = storage.all()
             obj_list = []
 

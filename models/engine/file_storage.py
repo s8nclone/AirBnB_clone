@@ -11,6 +11,8 @@ Typical usage example:
 
 import json
 
+valid_classes = {"BaseModel", "User"}
+
 
 class FileStorage:
     """Serializes and Deserializes.
