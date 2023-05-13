@@ -12,13 +12,13 @@ Typical usage example:
 import json
 
 valid_classes = {
-    "BaseModel", "User", "State", "Review", "Amenity", "Place", "City"
+    "BaseModel", "State", "Review", "Amenity", "User", "City", "Place"
     }
 
 # set of modules where valid_classes elements can be found
 modules = {
-    "models.base_model", "models.user", "models.state", "models.review",
-    "models.amenity", "models.place", "models.city"
+    "models.base_model", "models.state", "models.review",
+    "models.amenity", "models.user", "models.city", "models.place"
     }
 
 
@@ -77,6 +77,12 @@ class FileStorage:
             # I put this here instead of the top to avoid circular imports
             from models.base_model import BaseModel
             from models.user import User
+            from models.city import City
+            from models.state import State
+            from models.amenity import Amenity
+            from models.place import Place
+            from models.review import Review
+
             import sys
 
             with open(FileStorage.__file_path, 'r') as f:
