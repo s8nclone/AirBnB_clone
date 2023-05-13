@@ -11,10 +11,15 @@ Typical usage example:
 
 import json
 
-valid_classes = {"BaseModel", "User"}
+valid_classes = {
+    "BaseModel", "User", "State", "Review", "Amenity", "Place", "City"
+    }
 
 # set of modules where valid_classes elements can be found
-modules = {"models.base_model", "models.user"}
+modules = {
+    "models.base_model", "models.user", "models.state", "models.review",
+    "models.amenity", "models.place", "models.city"
+    }
 
 
 class FileStorage:
