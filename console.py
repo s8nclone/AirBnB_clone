@@ -4,11 +4,14 @@
 Contains the entry point of the command interpreter.
 
 """
-import cmd
 import ast
+import cmd
+import sys
+from datetime import datetime
 from models.base_model import BaseModel
 from models import storage
 from typing import Union
+from models.engine.file_storage import valid_classes
 
 
 class HBNBCommand(cmd.Cmd):
@@ -37,11 +40,12 @@ class HBNBCommand(cmd.Cmd):
         Example:
             create BaseModel
         """
-        ret_val = arg_splitter("create", arg)
+        class_name = arg_splitter("create", arg)
         # print(f"return value is {ret_val}")
 
-        if ret_val is True:
-            model = BaseModel()
+        if class_name:
+            cls = getattr(sys.modules["models.base_model"], class_name)
+            model = cls()
             model.save()
             print(model.id)
 
@@ -106,18 +110,22 @@ based or not on the class name.
             else:
                 instance = storage.all()[f"{cls}.{id}"]
                 setattr(instance, attr_name, ast.literal_eval(attr_val))
+
+                # make sure "updated_at" is well, up to date
+                setattr(instance, "updated_at", datetime.now())
                 storage.save()
             # print(f"\nInstance: {instance}")
 
 
-def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
+def arg_splitter(my_method: str, arg: str) -> Union[bool, str]:
     """Helper function to help split arguments (DRY)
 
     The arguments entered into the command interpreter are splitted
         on white spaces.
 
     Arguments:
-        cls -> The name of the HBNBCommand method where arg_splitter is used
+        my_method -> The name of the HBNBCommand method where
+                        arg_splitter is used
         arg -> The argument received from the class
 
     Return:
@@ -128,20 +136,20 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
     args = arg.split()
 
     if not args:
-        if cls == "all":
+        if my_method == "all":
             return True
         print("** class name missing **")
         return False
 
-    if args[0] != "BaseModel":
+    if args[0] not in valid_classes:
         print("** class doesn't exist **")
         return False
 
-    if cls in {"show", "destroy", "update"}:
+    if my_method in {"show", "destroy", "update"}:
         if len(args) < 2:
             print("** instance id missing **")
             return False
-        elif cls == "update":
+        elif my_method == "update":
             if len(args) > 1:
                 if not find_instance(args[1]):
                     return False
@@ -156,7 +164,7 @@ def arg_splitter(cls: str, arg: str) -> Union[bool, str]:
         else:
             return args[1]
 
-    return True
+    return args[0]
 
 
 def find_instance(instance_id: str) -> Union[BaseModel, None]:
