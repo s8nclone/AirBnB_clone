@@ -6,6 +6,7 @@ Contains the entry point of the command interpreter.
 """
 import ast
 import cmd
+import re
 import sys
 from datetime import datetime
 from models.base_model import BaseModel
@@ -13,6 +14,8 @@ from models import storage
 from typing import Union
 from models.engine.file_storage import valid_classes
 from models.engine.file_storage import modules
+
+all_objects = storage.all()
 
 
 class HBNBCommand(cmd.Cmd):
@@ -75,7 +78,7 @@ class HBNBCommand(cmd.Cmd):
         if obj_id:
             obj = find_instance(obj_id)
             if obj:
-                del storage.all()[f"{obj.__class__.__name__}.{obj_id}"]
+                del all_objects[f"{obj.__class__.__name__}.{obj_id}"]
                 storage.save()
 
     def do_all(self, arg: str) -> None:
@@ -85,7 +88,6 @@ based or not on the class name.
         args = arg_splitter("all", arg)
 
         if args:
-            all_objects = storage.all()
             obj_list = []
 
             for obj in all_objects.values():
@@ -112,13 +114,34 @@ based or not on the class name.
             if attr_name in {"id", "created_at", "updated_at"}:
                 print(f"** can't update the {attr_name} attribute **")
             else:
-                instance = storage.all()[f"{cls}.{id}"]
+                instance = all_objects[f"{cls}.{id}"]
                 setattr(instance, attr_name, ast.literal_eval(attr_val))
 
                 # make sure "updated_at" is well, up to date
                 setattr(instance, "updated_at", datetime.now())
                 storage.save()
             # print(f"\nInstance: {instance}")
+
+    def default(self, line: str) -> None:
+        """Called on an input line when the command prefix is not recognized.
+
+        In this case, we check if the line has the form "<class name>.all()"
+        and if so, we retrieve all instances of that class.
+        """
+        pattern = r"^(.*)\.all\(\)$"
+        match = re.match(pattern, line)
+        if match:
+            class_name = match.group(1)
+            if class_name not in valid_classes:
+                print("** class doesn't exist **")
+                return
+
+            objs = storage.all().values()
+            filtered_objs = list(filter(
+                lambda obj: type(obj).__name__ == class_name, objs))
+            print([str(obj) for obj in filtered_objs])
+        else:
+            super().default(line)
 
 
 def arg_splitter(my_method: str, arg: str) -> Union[bool, str]:
@@ -174,7 +197,7 @@ def arg_splitter(my_method: str, arg: str) -> Union[bool, str]:
 def find_instance(instance_id: str) -> Union[BaseModel, None]:
     """Finds instance based on the id (DRY).
     """
-    all_objects = storage.all()
+
     for obj in all_objects.values():
         if obj.id == instance_id:
             return obj
