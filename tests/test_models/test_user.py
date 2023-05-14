@@ -77,3 +77,7 @@ class TestUser(unittest.TestCase):
                          self.user.created_at.isoformat())
         self.assertEqual(user_dict['updated_at'],
                          self.user.updated_at.isoformat())
+
+
+if __name__ == "__main__":
+    unittest.main()

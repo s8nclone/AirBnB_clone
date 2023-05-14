@@ -54,3 +54,7 @@ class TestFileStorage(unittest.TestCase):
         self.storage.save()
         self.storage.reload()
         self.assertIn(key, self.storage.all())
+
+
+if __name__ == "__main__":
+    unittest.main()
