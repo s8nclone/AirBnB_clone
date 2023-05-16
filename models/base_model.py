@@ -34,14 +34,6 @@ class BaseModel:
             storage.new(self)
             # print(f"\After storage.new is called:\n {self}")
 
-    def __str__(self) -> str:
-        """String representation of BaseModel object
-
-        Returns:
-            str: The string representation of the BaseModel object.
-        """
-        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
-
     def save(self) -> None:
         """Updates the public instance attribute 'updated_at'\
              with current datetime
@@ -71,3 +63,11 @@ class BaseModel:
         new_dict['created_at'] = new_dict['created_at'].isoformat()
 
         return new_dict
+
+    def __str__(self) -> str:
+        """String representation of BaseModel object
+
+        Returns:
+            str: The string representation of the BaseModel object.
+        """
+        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
