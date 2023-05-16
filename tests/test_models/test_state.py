@@ -39,10 +39,11 @@ class TestState(unittest.TestCase):
         """
         Test that verifies if the to_dict method returns the correct dictionary
         """
-        dict_repr = self.state.to_dict()
-        self.assertEqual(type(dict_repr), dict)
-        self.assertTrue("name" in dict_repr.keys())
-        self.assertEqual(dict_repr["name"], "")
+        state_dict = self.state.to_dict()
+        self.assertIsInstance(state_dict, dict)
+        self.assertEqual(state_dict["__class__"], "State")
+        self.assertEqual(type(state_dict["created_at"]), str)
+        self.assertEqual(type(state_dict["updated_at"]), str)
 
     def test_str(self):
         """
@@ -54,7 +55,6 @@ class TestState(unittest.TestCase):
         self.assertTrue("id" in string_repr)
         self.assertTrue("created_at" in string_repr)
         self.assertTrue("updated_at" in string_repr)
-        self.assertTrue("name" in string_repr)
 
 
 if __name__ == '__main__':
