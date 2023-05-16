@@ -49,7 +49,7 @@ class BaseModel:
         Returns:
             None.
         """
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.utcnow()
         # print(f"\nThe type of created_at during save in base model is
         # {type(self.created_at)}")
         storage.save()
