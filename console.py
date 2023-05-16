@@ -63,20 +63,20 @@ class HBNBCommand(cmd.Cmd):
         Example:
             show BaseModel 1234-1234-1234
         """
-        obj_id = arg_splitter("show", arg)
+        cls, obj_id = arg_splitter("show", arg)
 
         if obj_id:
-            obj = find_instance(obj_id)
+            obj = find_instance(cls, obj_id)
             if obj:
                 print(obj)
 
     def do_destroy(self, arg: str) -> None:
         """Deletes an instance based on the class name and id.
         """
-        obj_id = arg_splitter("destroy", arg)
+        cls, obj_id = arg_splitter("destroy", arg)
 
         if obj_id:
-            obj = find_instance(obj_id)
+            obj = find_instance(cls, obj_id)
             if obj:
                 del all_objects[f"{obj.__class__.__name__}.{obj_id}"]
                 storage.save()
@@ -156,18 +156,18 @@ based or not on the class name.
                     lambda obj: type(obj).__name__ == class_name, objs))
                 print(len(filtered_objs))
             elif class_method == "show":
-                obj = find_instance(arg)
+                obj = find_instance(class_name, arg)
                 if obj:
                     print(obj)
             elif class_method == "destroy":
-                obj = find_instance(arg)
+                obj = find_instance(class_name, arg)
                 if obj:
                     del all_objects[f"{obj.__class__.__name__}.{arg}"]
                     storage.save()
             elif class_method == "update":
                 update_args = arg.split(", ")
                 id = update_args[0]
-                obj = find_instance(id)
+                obj = find_instance(class_name, id)
                 if not obj:
                     return
                 if len(update_args < 2):
@@ -230,7 +230,7 @@ def arg_splitter(my_method: str, arg: str) -> Union[bool, str]:
             return False
         elif my_method == "update":
             if len(args) > 1:
-                if not find_instance(args[1]):
+                if not find_instance(args[0], args[1]):
                     return False
                 elif len(args) < 3:
                     print("** attribute name missing **")
@@ -241,17 +241,18 @@ def arg_splitter(my_method: str, arg: str) -> Union[bool, str]:
             else:
                 return args[0], args[1], args[2], args[3]
         else:
-            return args[1]
+            return args[0], args[1]
 
     return args[0]
 
 
-def find_instance(instance_id: str) -> Union[BaseModel, None]:
+def find_instance(cls: str, instance_id: str) -> Union[BaseModel, None]:
     """Finds instance based on the id (DRY).
     """
 
-    for obj in all_objects.values():
-        if obj.id == instance_id:
+    for key, obj in all_objects.items():
+        obj_cls = key.split(".")[0]
+        if obj_cls == cls and obj.id == instance_id:
             return obj
     else:
         print("** no instance found **")
