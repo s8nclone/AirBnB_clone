@@ -178,7 +178,8 @@ based or not on the class name.
                 attr_val = update_args[2]
 
                 if attr_name in {"id", "created_at", "updated_at"}:
-                    print(f"** can't update the {attr_name} attribute **")
+                    # print(f"** can't update the {attr_name} attribute **")
+                    pass
                 else:
                     instance = all_objects[f"{class_name}.{id}"]
 
