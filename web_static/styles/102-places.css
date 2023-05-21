@@ -4,6 +4,7 @@ section.places {
 	gap: 30px;
 	justify-content: space-between;
 	margin: 1rem auto;
+	padding: 0 3%;
 }
 
 section.places h1,
@@ -29,7 +30,7 @@ section.places article
 	row-gap: 1rem;
 	padding: 20px;
 	position: relative;
-	width: 390px;
+	/* width: 390px; */
 }
 
 section.places article h2

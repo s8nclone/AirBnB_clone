@@ -24,6 +24,7 @@ body
 .container
 {
 	display: flex;
+	flex-direction: column;
 	margin: 30px auto;
 	max-width: 1000px;
 	margin-bottom: 20vh;
