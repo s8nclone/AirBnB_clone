@@ -1,0 +1,31 @@
+*, *:before, *:after
+{
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+html
+{
+	position:relative;
+	min-height: 100%;
+}
+
+body
+{
+	padding: 0;
+	margin: 0;
+	color: #484848;
+	font-size: 14px;
+	font-family: Circular,"Helvetica Neue",Helvetica, Arial, sans-serif;
+}
+
+.container
+{
+	display: flex;
+	flex-direction: column;
+	margin: 30px auto;
+	max-width: 1000px;
+	margin-bottom: 20vh;
+}

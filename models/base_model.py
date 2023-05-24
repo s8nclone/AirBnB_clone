@@ -7,11 +7,18 @@ from . import storage
 
 
 class BaseModel:
-    """Class Blueprint for other models
-    """
+    """Class Blueprint for other models"""
 
     def __init__(self, *args, **kwargs) -> None:
-        """Initialize a BaseModel object"""
+        """Initialize a BaseModel object
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            None.
+        """
         if kwargs:
             for key, value in kwargs.items():
                 if key != "__class__":
@@ -27,15 +34,14 @@ class BaseModel:
             storage.new(self)
             # print(f"\After storage.new is called:\n {self}")
 
-    def __str__(self) -> str:
-        """String representation of BaseModel object
-        """
-        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
-
     def save(self) -> None:
         """Updates the public instance attribute 'updated_at'\
-             with current datetime"""
-        self.updated_at = datetime.now()
+             with current datetime
+
+        Returns:
+            None.
+        """
+        self.updated_at = datetime.utcnow()
         # print(f"\nThe type of created_at during save in base model is
         # {type(self.created_at)}")
         storage.save()
@@ -43,8 +49,11 @@ class BaseModel:
         # {type(self.created_at)}")
 
     def to_dict(self) -> dict:
-        """Returns a dictionary containing all keys/value\
-            of __dict__ of the instance
+        """Updates the public instance attribute 'updated_at'\
+             with current datetime
+
+        Returns:
+            None.
         """
         # It's quite important that a copy is made
         # so that the reference is not modified
@@ -54,3 +63,11 @@ class BaseModel:
         new_dict['created_at'] = new_dict['created_at'].isoformat()
 
         return new_dict
+
+    def __str__(self) -> str:
+        """String representation of BaseModel object
+
+        Returns:
+            str: The string representation of the BaseModel object.
+        """
+        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"

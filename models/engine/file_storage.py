@@ -11,6 +11,16 @@ Typical usage example:
 
 import json
 
+valid_classes = {
+    "BaseModel", "State", "Review", "Amenity", "User", "City", "Place"
+    }
+
+# set of modules where valid_classes elements can be found
+modules = {
+    "models.base_model", "models.state", "models.review",
+    "models.amenity", "models.user", "models.city", "models.place"
+    }
+
 
 class FileStorage:
     """Serializes and Deserializes.
@@ -66,6 +76,13 @@ class FileStorage:
         try:
             # I put this here instead of the top to avoid circular imports
             from models.base_model import BaseModel
+            from models.user import User
+            from models.city import City
+            from models.state import State
+            from models.amenity import Amenity
+            from models.place import Place
+            from models.review import Review
+
             import sys
 
             with open(FileStorage.__file_path, 'r') as f:
@@ -73,10 +90,25 @@ class FileStorage:
                 # file is deleted set __objects to empty
                 FileStorage.__objects = {}
                 temp = json.load(f)
+
                 for key, value in temp.items():
                     class_name, obj_id = key.split('.')
-                    cls = getattr(sys.modules["models.base_model"], class_name)
-                    obj = cls(**value)
-                    FileStorage.__objects[key] = obj
+                    # print(f"class name is: {class_name}\n")
+                    module = ""
+
+                    for modl in modules:
+                        cls = getattr(sys.modules[modl], class_name, None)
+                        if cls is not None and cls.__name__ in valid_classes:
+                            # print(f"{cls} is found in {modl}\n")
+                            module = modl
+                            # print(f"module is {module}\n")
+                            break
+
+                    if module:
+                        cls = getattr(sys.modules[module], class_name)
+                        # print(f"\nFinal cls: {cls}")
+                        obj = cls(**value)
+                        FileStorage.__objects[key] = obj
+
         except FileNotFoundError as e:
             pass
